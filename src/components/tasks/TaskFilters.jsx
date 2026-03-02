@@ -2,11 +2,29 @@ import { useTaskStore } from "../../store/taskStore";
 import { FILTERS, CATEGORIES } from "../../utils/constants";
 
 export default function TaskFilters() {
-    const { currentFilter, currentCategory, setFilter, setCategory } =
-        useTaskStore();
+    const {
+        currentFilter,
+        currentCategory,
+        setFilter,
+        setCategory,
+        searchQuery,
+        setSearchQuery,
+    } = useTaskStore();
 
     return (
         <div className="card mb-6">
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Buscar tarea
+                </label>
+                <input
+                    type="text"
+                    placeholder="Buscar por título o descripción..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
+                />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">

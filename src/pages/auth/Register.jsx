@@ -11,7 +11,6 @@ export default function Register() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // React Hook Form para manejar y validar el formulario
     const {
         register,
         handleSubmit,
@@ -22,7 +21,7 @@ export default function Register() {
         setLoading(true);
         setError("");
 
-        // Llamar al servicio de autenticación enviando los 3 parámetros requeridos
+        // Servicio auth
         const result = await registerUser(
             data.email,
             data.password,
@@ -30,7 +29,7 @@ export default function Register() {
         );
 
         if (result.success) {
-            // Guardar usuario en Zustand y redirigir al dashboard
+            // Actualiza zustand y redirige al inicio del dashboard
             setUser(result.user);
             navigate("/dashboard");
         } else {
@@ -52,7 +51,7 @@ export default function Register() {
                     </p>
                 </div>
 
-                {/* Mensaje de error general de Firebase */}
+                {/* Error general */}
                 {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
                         {error}
@@ -60,7 +59,6 @@ export default function Register() {
                 )}
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Campo de Nombre Completo */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Nombre completo
@@ -85,7 +83,6 @@ export default function Register() {
                         )}
                     </div>
 
-                    {/* Campo de Email */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Correo electrónico
@@ -109,7 +106,6 @@ export default function Register() {
                         )}
                     </div>
 
-                    {/* Campo de Contraseña */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Contraseña
@@ -117,7 +113,7 @@ export default function Register() {
                         <input
                             type="password"
                             className="input-field"
-                            placeholder="........"
+                            placeholder="••••••••"
                             {...register("password", {
                                 required: "La contraseña es obligatoria",
                                 minLength: {
@@ -133,7 +129,7 @@ export default function Register() {
                         )}
                     </div>
 
-                    {/* Botón de Registro */}
+                    {/* Botón enviar */}
                     <button
                         type="submit"
                         disabled={loading}
@@ -143,7 +139,7 @@ export default function Register() {
                     </button>
                 </form>
 
-                {/* Enlace de redirección a Login */}
+                {/* Enlace a login */}
                 <p className="text-center mt-6 text-gray-600">
                     ¿Ya tienes cuenta?{" "}
                     <Link

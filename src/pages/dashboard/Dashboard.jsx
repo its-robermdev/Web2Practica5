@@ -4,10 +4,12 @@ import { useTasks } from "../../hooks/useTasks";
 import TaskFilters from "../../components/tasks/TaskFilters";
 import TaskList from "../../components/tasks/TaskList";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import TaskStats from "../../components/tasks/TaskStats";
 
 export default function Dashboard() {
     const user = useAuthStore((state) => state.user);
-    const { tasks, currentFilter, currentCategory, loading } = useTaskStore();
+    const { tasks, currentFilter, currentCategory, searchQuery, loading } =
+        useTaskStore();
 
     // Hook que se suscribe a las tareas en tiempo real
     useTasks();
@@ -18,6 +20,16 @@ export default function Dashboard() {
         if (currentFilter === "pending" && task.completed) return false;
         if (currentCategory !== "all" && task.category !== currentCategory)
             return false;
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const matchTitle = task.title.toLowerCase().includes(query);
+            const matchDesc =
+                task.description?.toLowerCase().includes(query) || false;
+
+            if (!matchTitle && !matchDesc) return false;
+        }
+
         return true;
     });
 
@@ -37,6 +49,7 @@ export default function Dashboard() {
                 </p>
             </div>
             <TaskFilters />
+            <TaskStats />
             <TaskList tasks={filteredTasks} />
         </div>
     );

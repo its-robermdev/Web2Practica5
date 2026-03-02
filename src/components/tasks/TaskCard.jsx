@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { updateTask, deleteTask } from "../../services/taskService";
 import { CATEGORIES } from "../../utils/constants";
-import { getDueDateLabel, isoverdue } from "../../utils/dateHelpers";
+import { getDueDateLabel, isOverdue } from "../../utils/dateHelpers";
+import toast from "react-hot-toast";
 
 export default function TaskCard({ task }) {
     // Encontrar la categoría correspondiente de las constantes
@@ -12,21 +13,33 @@ export default function TaskCard({ task }) {
     const categoryLabel = category ? category.label : "Otro";
 
     // Verificar si la tarea está vencida usando el helper
-    const taskIsOverdue = isoverdue(task.dueDate, task.completed);
+    const taskIsOverdue = isOverdue(task.dueDate, task.completed);
 
     const handleToggleComplete = async (e) => {
-        e.preventDefault(); // Evitar que el Link navegue
-        await updateTask(task.id, { completed: !task.completed });
-    };
-
-    const handleDelete = async (e) => {
-        e.preventDefault(); // Evitar que el Link navegue
-        // Implementar eliminación con confirmación
-        if (window.confirm("¿Estás seguro de eliminar esta tarea?")) {
-            await deleteTask(task.id);
+        e.preventDefault();
+        const result = await updateTask(task.id, {
+            completed: !task.completed,
+        });
+        if (result.success) {
+            toast.success(
+                task.completed ? "Marcada como pendiente" : "Tarea completada",
+            );
+        } else {
+            toast.error("Error al actualizar el estado");
         }
     };
 
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        if (window.confirm("¿Estás seguro de eliminar esta tarea?")) {
+            const result = await deleteTask(task.id);
+            if (result.success) {
+                toast.success("Tarea eliminada correctamente");
+            } else {
+                toast.error("Error al eliminar la tarea");
+            }
+        }
+    };
     return (
         <Link to={`/tasks/${task.id}`} className="block">
             <div
