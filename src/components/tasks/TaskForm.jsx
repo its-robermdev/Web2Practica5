@@ -1,26 +1,25 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../../store/authStore";
+import { useUIStore } from "../../store/uiStore";
 import { createTask, updateTask } from "../../services/taskService";
 import { CATEGORIES, PRIORITIES } from "../../utils/constants";
 import toast from "react-hot-toast";
 
 export default function TaskForm({ onClose, taskToEdit = null }) {
     const user = useAuthStore((state) => state.user);
+    const { theme } = useUIStore();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Determinar si estamos en modo edición
     const isEditing = !!taskToEdit;
 
-    // Preparar valores por defecto
     const defaultValues = taskToEdit
         ? {
               title: taskToEdit.title,
               description: taskToEdit.description || "",
               category: taskToEdit.category,
               priority: taskToEdit.priority,
-              // Convertir Date a formato YYYY-MM-DD para el input
               dueDate: taskToEdit.dueDate
                   ? taskToEdit.dueDate.toISOString().split("T")[0]
                   : "",
@@ -56,10 +55,8 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
         let result;
 
         if (isEditing) {
-            // Modo edición: actualizar tarea existente
             result = await updateTask(taskToEdit.id, taskData);
         } else {
-            // Modo creación: crear nueva tarea
             result = await createTask(user.uid, taskData);
         }
 
@@ -83,37 +80,41 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
         }
         setLoading(false);
     };
+
     return (
-        <div className="card">
+        <div
+            className={`card transition-colors ${theme === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"}`}
+        >
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3
+                    className={`text-xl font-bold transition-colors ${theme === "dark" ? "text-white" : "text-gray-800"}`}
+                >
                     {isEditing ? "Editar Tarea" : "Nueva Tarea"}
                 </h3>
                 <button
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+                    className={`text-2xl leading-none transition-colors ${theme === "dark" ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-700"}`}
                 >
                     &times;
                 </button>
             </div>
 
             {error && (
-                <div
-                    className="bg-red-50 border border-red-200 text-red-700 px-4 py-3
-rounded-lg mb-4"
-                >
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
                     {error}
                 </div>
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                        className={`block text-sm font-medium mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                    >
                         Título *
                     </label>
                     <input
                         type="text"
-                        className="input-field"
+                        className={`input-field transition-colors ${theme === "dark" ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400" : ""}`}
                         placeholder="Ej: Completar informe mensual"
                         {...register("title", {
                             required: "El título es obligatorio",
@@ -131,11 +132,13 @@ rounded-lg mb-4"
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                        className={`block text-sm font-medium mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                    >
                         Descripción
                     </label>
                     <textarea
-                        className="input-field"
+                        className={`input-field transition-colors ${theme === "dark" ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400" : ""}`}
                         rows="3"
                         placeholder="Descripción detallada de la tarea..."
                         {...register("description")}
@@ -144,11 +147,13 @@ rounded-lg mb-4"
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            className={`block text-sm font-medium mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                        >
                             Categoría *
                         </label>
                         <select
-                            className="input-field"
+                            className={`input-field transition-colors ${theme === "dark" ? "bg-gray-700 border-gray-600 text-white" : ""}`}
                             {...register("category", { required: true })}
                         >
                             {CATEGORIES.map((cat) => (
@@ -160,11 +165,13 @@ rounded-lg mb-4"
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            className={`block text-sm font-medium mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                        >
                             Prioridad *
                         </label>
                         <select
-                            className="input-field"
+                            className={`input-field transition-colors ${theme === "dark" ? "bg-gray-700 border-gray-600 text-white" : ""}`}
                             {...register("priority", { required: true })}
                         >
                             {PRIORITIES.map((priority) => (
@@ -176,19 +183,20 @@ rounded-lg mb-4"
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            className={`block text-sm font-medium mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                        >
                             Fecha de vencimiento
                         </label>
                         <input
                             type="date"
-                            className="input-field"
+                            className={`input-field transition-colors w-full ${theme === "dark" ? "bg-gray-700 border-gray-600 text-white" : ""}`}
                             {...register("dueDate")}
                         />
                     </div>
                 </div>
 
-                {/* Botones */}
-                <div className="flex gap-3 justify-end">
+                <div className="flex gap-3 justify-end pt-2">
                     <button
                         type="button"
                         onClick={onClose}

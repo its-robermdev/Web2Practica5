@@ -3,11 +3,12 @@ import { updateTask, deleteTask } from "../../services/taskService";
 import { CATEGORIES, PRIORITIES } from "../../utils/constants";
 import { getDueDateLabel, isOverdue } from "../../utils/dateHelpers";
 import toast from "react-hot-toast";
+import { useUIStore } from "../../store/uiStore";
 
 export default function TaskCard({ task }) {
     const navigate = useNavigate();
+    const { theme } = useUIStore();
 
-    // Obtener categorias, prioridades y sus colores para mostrar en los badges
     const category = CATEGORIES.find((c) => c.id === task.category);
     const categoryColor = category ? category.color : "gray";
     const categoryLabel = category ? category.label : "Otro";
@@ -18,7 +19,6 @@ export default function TaskCard({ task }) {
 
     const taskIsOverdue = isOverdue(task.dueDate, task.completed);
 
-    // Función para alternar el estado de completada/pending de la tarea
     const handleToggleComplete = async (e) => {
         e.preventDefault();
         const result = await updateTask(task.id, {
@@ -33,7 +33,6 @@ export default function TaskCard({ task }) {
         }
     };
 
-    // Función para eliminar la tarea
     const handleDelete = async (e) => {
         e.preventDefault();
         if (window.confirm("¿Estás seguro de eliminar esta tarea?")) {
@@ -49,11 +48,18 @@ export default function TaskCard({ task }) {
     return (
         <div
             className={`card flex flex-col md:flex-row items-center md:items-center text-center md:text-left gap-4 md:gap-5 hover:shadow-lg transition-all duration-200 
-          ${task.completed ? "opacity-75 bg-gray-50" : "bg-white"} 
-          ${taskIsOverdue ? "border-2 border-red-500" : "border border-transparent"}
+          ${
+              task.completed
+                  ? theme === "dark"
+                      ? "opacity-75 bg-gray-900 border-gray-800"
+                      : "opacity-75 bg-gray-50 border-transparent"
+                  : theme === "dark"
+                    ? "bg-gray-800 border-gray-700"
+                    : "bg-white border-transparent"
+          } 
+          ${taskIsOverdue ? "border-red-500 border-2" : "border"}
         `}
         >
-            {/* Boton check para alternar el estado de la tarea */}
             <button
                 onClick={handleToggleComplete}
                 title={
@@ -64,7 +70,7 @@ export default function TaskCard({ task }) {
                 className={`group shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border-[2.5px] transition-all ${
                     task.completed
                         ? "bg-green-500 border-green-500 text-white hover:bg-gray-200 hover:border-gray-400 hover:text-gray-600 shadow-sm"
-                        : "border-gray-300 bg-white text-transparent hover:border-green-500 hover:text-green-500"
+                        : `bg-transparent text-transparent hover:border-green-500 hover:text-green-500 ${theme === "dark" ? "border-gray-500" : "border-gray-300"}`
                 }`}
             >
                 {task.completed ? (
@@ -118,29 +124,30 @@ export default function TaskCard({ task }) {
 
             <div className="grow min-w-0 w-full flex flex-col items-center md:items-start">
                 <h3
-                    className={`text-xl font-bold truncate w-full ${
+                    className={`text-xl font-bold truncate w-full transition-colors ${
                         task.completed
-                            ? "line-through text-gray-400"
-                            : "text-gray-800"
+                            ? theme === "dark"
+                                ? "line-through text-gray-500"
+                                : "line-through text-gray-400"
+                            : theme === "dark"
+                              ? "text-white"
+                              : "text-gray-800"
                     }`}
                 >
                     {task.title}
                 </h3>
 
                 {task.description && (
-                    <p className="text-gray-600 text-sm mt-1 line-clamp-2 w-full">
+                    <p
+                        className={`text-sm mt-1 line-clamp-2 w-full transition-colors ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
+                    >
                         {task.description}
                     </p>
                 )}
 
-                {/* Badges */}
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-3">
                     <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${
-                            task.completed
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                        }`}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${task.completed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
                     >
                         <span className="font-bold opacity-60 mr-1">
                             Estado:
@@ -168,11 +175,7 @@ export default function TaskCard({ task }) {
 
                     {task.dueDate && (
                         <span
-                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${
-                                taskIsOverdue
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-blue-100 text-blue-800"
-                            }`}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${isOverdue(task.dueDate, task.completed) ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
                         >
                             <span className="font-bold opacity-60 mr-1">
                                 Vence:
@@ -183,13 +186,15 @@ export default function TaskCard({ task }) {
                 </div>
             </div>
 
-            {/* Botones */}
             <div className="flex gap-2.5 shrink-0 mt-3 md:mt-0 w-full md:w-auto justify-center md:justify-end">
-                {/* Botón Ver Detalles (Gris) */}
                 <button
                     onClick={() => navigate(`/tasks/${task.id}`)}
                     title="Ver detalles"
-                    className="w-11 h-11 flex items-center justify-center rounded-xl border-2 border-gray-400 text-gray-500 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-500 transition-colors"
+                    className={`w-11 h-11 flex items-center justify-center rounded-xl border-2 transition-colors ${
+                        theme === "dark"
+                            ? "border-gray-500 text-gray-400 hover:bg-gray-700 hover:text-gray-200 hover:border-gray-400"
+                            : "border-gray-400 text-gray-500 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-500"
+                    }`}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -212,7 +217,6 @@ export default function TaskCard({ task }) {
                     </svg>
                 </button>
 
-                {/* Botón Editar (Azul - Envía state) */}
                 <button
                     onClick={() =>
                         navigate(`/tasks/${task.id}`, {
@@ -220,7 +224,7 @@ export default function TaskCard({ task }) {
                         })
                     }
                     title="Editar tarea"
-                    className="w-11 h-11 flex items-center justify-center rounded-xl border-2 border-blue-500 text-blue-500 hover:bg-blue-50 transition-colors"
+                    className={`w-11 h-11 flex items-center justify-center rounded-xl border-2 border-blue-500 text-blue-500 transition-colors ${theme === "dark" ? "hover:bg-blue-900/30" : "hover:bg-blue-50"}`}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -238,11 +242,10 @@ export default function TaskCard({ task }) {
                     </svg>
                 </button>
 
-                {/* Botón Eliminar (Rojo) */}
                 <button
                     onClick={handleDelete}
                     title="Eliminar tarea"
-                    className="w-11 h-11 flex items-center justify-center rounded-xl border-2 border-red-500 text-red-500 hover:bg-red-50 transition-colors"
+                    className={`w-11 h-11 flex items-center justify-center rounded-xl border-2 border-red-500 text-red-500 transition-colors ${theme === "dark" ? "hover:bg-red-900/30" : "hover:bg-red-50"}`}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

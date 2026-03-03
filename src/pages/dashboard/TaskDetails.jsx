@@ -13,11 +13,13 @@ import {
 } from "../../utils/dateHelpers";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import TaskForm from "../../components/tasks/TaskForm";
+import { useUIStore } from "../../store/uiStore";
 
 export default function TaskDetails() {
-    const { taskId } = useParams(); // Obtener ID de la URL
+    const { taskId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const { theme } = useUIStore();
 
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -34,7 +36,6 @@ export default function TaskDetails() {
         if (result.success) {
             setTask(result.task);
         } else {
-            // Si no existe la tarea, volver al dashboard
             navigate("/dashboard");
         }
         setLoading(false);
@@ -45,7 +46,6 @@ export default function TaskDetails() {
             completed: !task.completed,
         });
         if (result.success) {
-            // Actualizar estado local
             setTask({ ...task, completed: !task.completed });
         }
     };
@@ -63,7 +63,6 @@ export default function TaskDetails() {
         return <LoadingSpinner />;
     }
 
-    // Mostrar formulario de edición si editing es true
     if (editing) {
         return (
             <div className="max-w-4xl mx-auto p-6">
@@ -87,37 +86,36 @@ export default function TaskDetails() {
 
     return (
         <div className="max-w-4xl mx-auto p-6">
-            {/* Breadcrumb */}
             <div className="mb-6">
                 <Link
                     to="/dashboard"
-                    className="text-blue-600 hover:underline flex items-center gap-2"
+                    className={`hover:underline flex items-center gap-2 transition-colors ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`}
                 >
                     Volver al Dashboard
                 </Link>
             </div>
 
-            <div className="card">
-                {/* Header */}
+            <div
+                className={`card transition-colors ${theme === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white"}`}
+            >
                 <div className="flex justify-between items-start mb-6">
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                        <h1
+                            className={`text-3xl font-bold mb-2 transition-colors ${theme === "dark" ? "text-white" : "text-gray-800"}`}
+                        >
                             {task.title}
                         </h1>
-                        {/* Badges de categoría, prioridad y estado */}
                         <div className="flex flex-wrap gap-2 mb-4">
                             <span
                                 className={`px-3 py-1 rounded-full text-sm font-medium bg-${category.color}-100 text-${category.color}-800`}
                             >
                                 {category.label}
                             </span>
-
                             <span
                                 className={`px-3 py-1 rounded-full text-sm font-medium bg-${priority.color}-100 text-${priority.color}-800`}
                             >
                                 {priority.label}
                             </span>
-
                             <span
                                 className={`px-3 py-1 rounded-full text-sm font-medium ${
                                     task.completed
@@ -127,7 +125,6 @@ export default function TaskDetails() {
                             >
                                 {task.completed ? "Completada" : "Pendiente"}
                             </span>
-
                             {task.dueDate && (
                                 <span
                                     className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -142,7 +139,6 @@ export default function TaskDetails() {
                         </div>
                     </div>
 
-                    {/* Botones */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => setEditing(true)}
@@ -156,37 +152,52 @@ export default function TaskDetails() {
                     </div>
                 </div>
 
-                {/* Descripción */}
-                <div className="border-t pt-6">
-                    <h2 className="text-lg font-semibold text-gray-700 mb-2">
+                <div
+                    className={`border-t pt-6 transition-colors ${theme === "dark" ? "border-gray-700" : "border-gray-200"}`}
+                >
+                    <h2
+                        className={`text-lg font-semibold mb-2 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                    >
                         Descripción
                     </h2>
-                    <p className="text-gray-600 whitespace-pre-wrap">
+                    <p
+                        className={`whitespace-pre-wrap transition-colors ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                    >
                         {task.description || "Sin descripción"}
                     </p>
                 </div>
 
-                {/* Información adicional */}
-                <div className="border-t pt-6 mt-6">
-                    <h2 className="text-lg font-semibold text-gray-700 mb-4">
+                <div
+                    className={`border-t pt-6 mt-6 transition-colors ${theme === "dark" ? "border-gray-700" : "border-gray-200"}`}
+                >
+                    <h2
+                        className={`text-lg font-semibold mb-4 transition-colors ${theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
+                    >
                         Información adicional
                     </h2>
                     <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <dt className="text-sm font-medium text-gray-500">
+                            <dt
+                                className={`text-sm font-medium transition-colors ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}
+                            >
                                 Creada
                             </dt>
-                            <dd className="text-gray-900">
+                            <dd
+                                className={`transition-colors ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                            >
                                 {formatDateTime(task.createdAt)}
                             </dd>
                         </div>
-
                         {task.dueDate && (
                             <div>
-                                <dt className="text-sm font-medium text-gray-500">
+                                <dt
+                                    className={`text-sm font-medium transition-colors ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}
+                                >
                                     Fecha de vencimiento
                                 </dt>
-                                <dd className="text-gray-900">
+                                <dd
+                                    className={`transition-colors ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}
+                                >
                                     {formatDateTime(task.dueDate)}
                                 </dd>
                             </div>
@@ -194,8 +205,9 @@ export default function TaskDetails() {
                     </dl>
                 </div>
 
-                {/* Botón de toggle completado */}
-                <div className="border-t pt-6 mt-6">
+                <div
+                    className={`border-t pt-6 mt-6 transition-colors ${theme === "dark" ? "border-gray-700" : "border-gray-200"}`}
+                >
                     <button
                         onClick={handleToggleComplete}
                         className={
