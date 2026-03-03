@@ -19,6 +19,33 @@ export default function TaskCard({ task }) {
 
     const taskIsOverdue = isOverdue(task.dueDate, task.completed);
 
+    const badgeColors = {
+        blue: "bg-blue-100 text-blue-800",
+        green: "bg-green-100 text-green-800",
+        purple: "bg-purple-100 text-purple-800",
+        gray: "bg-gray-100 text-gray-800",
+        yellow: "bg-yellow-100 text-yellow-800",
+        red: "bg-red-100 text-red-800",
+    };
+
+    const baseCardClasses =
+        "card flex flex-col md:flex-row items-center md:items-center text-center md:text-left gap-4 md:gap-5 hover:shadow-lg transition-all duration-200";
+
+    const themeCardClasses =
+        theme === "dark"
+            ? task.completed
+                ? "opacity-75 bg-gray-900"
+                : "bg-gray-800"
+            : task.completed
+              ? "opacity-75 bg-gray-50"
+              : "bg-white";
+
+    const borderCardClasses = taskIsOverdue
+        ? "border-2 border-solid !border-red-500"
+        : theme === "dark"
+          ? "border border-solid border-gray-700"
+          : "border border-solid border-transparent";
+
     const handleToggleComplete = async (e) => {
         e.preventDefault();
         const result = await updateTask(task.id, {
@@ -47,19 +74,9 @@ export default function TaskCard({ task }) {
 
     return (
         <div
-            className={`card flex flex-col md:flex-row items-center md:items-center text-center md:text-left gap-4 md:gap-5 hover:shadow-lg transition-all duration-200 
-          ${
-              task.completed
-                  ? theme === "dark"
-                      ? "opacity-75 bg-gray-900 border-gray-800"
-                      : "opacity-75 bg-gray-50 border-transparent"
-                  : theme === "dark"
-                    ? "bg-gray-800 border-gray-700"
-                    : "bg-white border-transparent"
-          } 
-          ${taskIsOverdue ? "border-red-500 border-2" : "border"}
-        `}
+            className={`${baseCardClasses} ${themeCardClasses} ${borderCardClasses}`}
         >
+            {/* Boton check para alternar el estado de la tarea */}
             <button
                 onClick={handleToggleComplete}
                 title={
@@ -145,6 +162,7 @@ export default function TaskCard({ task }) {
                     </p>
                 )}
 
+                {/* Badges */}
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-3">
                     <span
                         className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${task.completed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
@@ -156,7 +174,7 @@ export default function TaskCard({ task }) {
                     </span>
 
                     <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide bg-${categoryColor}-100 text-${categoryColor}-800`}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${badgeColors[categoryColor] || badgeColors.gray}`}
                     >
                         <span className="font-bold opacity-60 mr-1">
                             Categoría:
@@ -165,7 +183,7 @@ export default function TaskCard({ task }) {
                     </span>
 
                     <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide bg-${priorityColor}-100 text-${priorityColor}-800`}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${badgeColors[priorityColor] || badgeColors.gray}`}
                     >
                         <span className="font-bold opacity-60 mr-1">
                             Prioridad:
@@ -175,7 +193,7 @@ export default function TaskCard({ task }) {
 
                     {task.dueDate && (
                         <span
-                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${isOverdue(task.dueDate, task.completed) ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${taskIsOverdue ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
                         >
                             <span className="font-bold opacity-60 mr-1">
                                 Vence:
@@ -186,6 +204,7 @@ export default function TaskCard({ task }) {
                 </div>
             </div>
 
+            {/* Botones */}
             <div className="flex gap-2.5 shrink-0 mt-3 md:mt-0 w-full md:w-auto justify-center md:justify-end">
                 <button
                     onClick={() => navigate(`/tasks/${task.id}`)}
