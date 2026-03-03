@@ -18,21 +18,24 @@ export default function Navbar() {
 
     return (
         <nav
-            className={`shadow-md transition-colors duration-200 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}
+            className={`shadow-md transition-colors duration-200 ${
+                theme === "dark"
+                    ? "bg-gray-800 text-white"
+                    : "bg-white text-gray-800"
+            }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16">
+                <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-4 sm:py-0 gap-4 sm:gap-0">
                     <div className="flex items-center">
                         <Link
                             to="/dashboard"
-                            className="text-2xl font-bold text-blue-600"
+                            className="text-2xl font-bold text-blue-600 text-center"
                         >
                             Task Manager Pro
                         </Link>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* Botón para alternar el tema */}
                         <button
                             onClick={toggleTheme}
                             className={`btn-secondary`}
@@ -42,7 +45,7 @@ export default function Navbar() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
-                                    class="size-6"
+                                    className="size-6"
                                 >
                                     <path d="M12 19a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z" />
                                     <path d="M18.313 16.91l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.218 -1.567l.102 .07z" />
@@ -59,7 +62,7 @@ export default function Navbar() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
-                                    class="size-6"
+                                    className="size-6"
                                 >
                                     <path d="M12 1.992a10 10 0 1 0 9.236 13.838c.341 -.82 -.476 -1.644 -1.298 -1.31a6.5 6.5 0 0 1 -6.864 -10.787l.077 -.08c.551 -.63 .113 -1.653 -.758 -1.653h-.266l-.068 -.006l-.06 -.002z" />
                                 </svg>

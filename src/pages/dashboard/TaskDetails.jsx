@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import {
     getTaskById,
     updateTask,
@@ -17,9 +17,11 @@ import TaskForm from "../../components/tasks/TaskForm";
 export default function TaskDetails() {
     const { taskId } = useParams(); // Obtener ID de la URL
     const navigate = useNavigate();
+    const location = useLocation();
+
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = useState(location.state?.openEdit || false);
 
     useEffect(() => {
         loadTask();
@@ -68,8 +70,12 @@ export default function TaskDetails() {
                 <TaskForm
                     taskToEdit={task}
                     onClose={() => {
-                        setEditing(false);
-                        loadTask();
+                        if (location.state?.openEdit) {
+                            navigate("/dashboard");
+                        } else {
+                            setEditing(false);
+                            loadTask();
+                        }
                     }}
                 />
             </div>

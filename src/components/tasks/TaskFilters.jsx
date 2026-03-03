@@ -30,14 +30,14 @@ export default function TaskFilters() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Filtrar por estado
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {FILTERS.map((filter) => (
                             <button
                                 key={filter.id}
                                 onClick={() => setFilter(filter.id)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                className={`flex-1 sm:flex-none whitespace-nowrap px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors ${
                                     currentFilter === filter.id
-                                        ? "bg-blue-600 text-white"
+                                        ? "bg-blue-600 text-white shadow-sm"
                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                 }`}
                             >
